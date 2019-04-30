@@ -38,60 +38,92 @@ function LinkList() {
     // 如果index不在length范围内，就返回false
     if(index < 0 || index > length) return false
     // 如果index在length范围内
-    // 创建要添加的节点
+    // 初始化待添加的节点insert_node, 待添加的节点的前一个节点pre_node，待添加的节点的后一个节点next_node
     var insert_node = new Node(data)
-    // insert_node的前一个节点
-    var last_node = null
-    // insert_node的后一个节点
+    var pre_node = null
     var next_node = null
 
-    // ------------ start: 确定last_node和next_node--------------
+    // ------------ start: 确定pre_node和next_node--------------
     if(index === 0) {
       // 在头部插入节点，可以知道head变成了next_node
       next_node = head
     }else {
-      // 在中间插入节点，可以知道last_node和next_node
-      last_node = head
-      while (--index > 0) {
-        last_node = last_node.next
+      // 在中间插入节点，可以知道pre_node和next_node
+      pre_node = head
+      while (index > 1) {
+        pre_node = pre_node.next
+        index--
       }
-      next_node = last_node.next
+      next_node = pre_node.next
     }
-    // ------------ end: 确定last_node和next_node--------------
+    // ------------ end: 确定pre_node和next_node--------------
 
     // ------------ start: 连接上下游 -------------
-    // 连接上游：last_node和insert_node
-    if(last_node) last_node.next = insert_node
+    // 连接上游：pre_node和insert_node
+    if(pre_node) pre_node.next = insert_node
     // 连接下游：insert_node和next_node
     insert_node.next = next_node
     // ------------ end: 连接上下游 -------------
 
     // --------- start: 处理边界情况下，head和tail的处理--------
-    // last_node不存在，说明是插入头节点,处理头节点
-    if(last_node === null) head = insert_node
-    // next_node不存在，说明是插入尾节点,处理头节点
+    // pre_node不存在，说明是插入头节点,处理头节点
+    if(pre_node === null) head = insert_node
+    // next_node不存在，说明是插入尾节点,处理尾节点
     if(next_node === null) tail = insert_node
     // --------- end: 处理边界情况下，head和tail的处理--------
 
     length++
     return true
   }
-  this.romove = function(index) {
-    if(index < 0 || index > length - 1) return false
-    // 初始化待删除节点
+  this.remove = function(index) {
+    // 如果index不在length范围内，就返回false
+    if(index < 0 || index > length - 1) return null
+    // 初始化待删除节点cur_node, 待删除节点的前一个节点pre_node，待删除节点的后一个节点next_node
     var cur_node = null
-    if(length) {
+    var pre_node = null
+    var next_node = null
+
+    // ---------- start: 确定pre_node, cur_node, next_node----------
+    if (index === 0) {
       cur_node = head
-      while (index--) {
-        cur_node = cur_node.next
+    } else {
+      pre_node = head
+      while (index > 1) {
+        pre_node = pre_node.next
+        index--
       }
+      cur_node = pre_node.next
     }
+
+    if(cur_node) next_node = cur_node.next
+    // ---------- end: 确定pre_node, cur_node, next_node----------
+
+    // ------------ start: 连接上下游,连接pre_node和next_node -------------
+    if(pre_node) pre_node.next = next_node
+    // ------------ end: 连接上下游,连接pre_node和next_node -------------
+
+    // --------- start: 处理边界情况下，head和tail的处理--------
+    // pre_node不存在，说明是插入头节点,处理头节点
+    if(pre_node === null) head = next_node
+    // next_node不存在，说明是插入尾节点,处理尾节点
+    if(next_node === null) tail = pre_node
+    // --------- end: 处理边界情况下，head和tail的处理--------
+    
+    length--
+    return cur_node ? cur_node.data : null
   }
 }
 
 var link = new LinkList()
 link.append(1)
-link.insert(5,1)
+link.append(2)
+link.append(3)
+link.append(5)
+link.insert(0,1)
 link.insert(2,1)
 link.insert(3,0)
+link.remove(2)
+link.remove(0)
+const del_node = link.remove(4)
+console.log(del_node, 'aaaaa')
 link.print()
